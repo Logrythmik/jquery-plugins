@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html lang="en-us" class="no-js">
+<head> 
+    <meta charset="utf-8" />
+    <title>jquery.ajaxLabel Demo</title>
+    
+	<link type="text/css" rel="stylesheet" href="http://fortawesome.github.com/Font-Awesome/assets/css/site.css" />
+	<link type="text/css" rel="stylesheet" href="jquery.ajaxLabel.css" />
+</head>
+
+<body>
+    <div id="container">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button type="button"class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="brand" href="/">
+                        jQuery AJAX Label Example
+                    </a>
+                </div>
+            </div>
+        </div>    
+                 
+        <section id="main" class="container">
+            
+			
+			<h3>Example:</h3>
+			
+			<span class="ajaxLabel" id="example1"
+                      data-url="response.json">
+                   <span class="ajaxLabelView">
+                        Your name is Unknown
+                    </span>
+                    <span class="ajaxLabelEdit">
+                        <input type="text" id="name" name="name"/>                        
+                    </span>
+                </span>     
+        </section>
+    </div>
+	<script type="text/javascript" src="http://fortawesome.github.com/Font-Awesome/assets/js/jquery-1.7.1.min.js" />
+	<script type="text/javascript" src="jquery.ajaxLabel.js" />
+	<script type="text/javascript">
+		$(function() {
+			 $("#example1").ajaxLabel({
+				validate: function (model) {
+					var name = model.editPane.find("#name").val();
+					if(name = "" || name = null)
+						return { valid: false, message: "Name is required!" };
+					return { valid: true };
+				},
+				success: function (response, model) {					
+					model.viewPane.children().remove();
+					model.viewPane.text(model.editPane.find("#name").val());					
+				}
+			});
+		});
+	</script>
+
+    
+</body>
+</html>
