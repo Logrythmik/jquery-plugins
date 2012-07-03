@@ -1,7 +1,12 @@
 ﻿(function ($) {
 
-    function ajaxLabel(el, options) {
-        var self = this;
+    var ajaxLabel = function(el, options) {
+	    var self = this;
+		
+		var asAsync = function(func) {
+			window.setTimeout(function() { func(); },0);
+		};
+				
         // default settings
         this.defaults = {
 			// url:
@@ -19,7 +24,7 @@
 			buttonClass: "ajaxLabelControl",
 			
 			// Contents defaulted to use Twitter Bootstrapper icons
-			viewEditButton: "<a style='margin-left:6px'></a>",
+			viewEditButton: "<a style='margin-left:6px'/>",
 			viewEditButtonContents: "<i title='Editable' class='icon-edit'></i>",
 			
 			editSaveButton: "<a class='btn btn-small'/>",
@@ -59,24 +64,28 @@
 			// this to render your result. You get the ajax response object and the 
 			// model as described above.
             error: function (message, model) {
-                 self.message(message);
+				var msg = message;
+				asAsync(function() { window.alert(msg); });
             },			
 			// message:
 			// -------------------------------------------------------------------
 			// All messages can be handled here.
 			message: function (message) {
-                 alert(message);
+                var msg = message;
+				asAsync(function() { window.alert(msg); });
             },
 			// log:
 			// -------------------------------------------------------------------
 			// All errors are logged too.
             log: function (message) {
-                 console.log(message);
+                 console.log("jquery.AjaxLabel: " + message);
             }
         };
 
         //Extending options:
         this.$opts = $.extend({}, this.defaults, options);
+		
+		self.log('Initialized');
 
         //Privates:
         this.$el = $(el);
@@ -86,8 +95,8 @@
         this.$model = {
             self: self,
             element: this.$el,
-            viewPane: this.$el.children(this.$opts.viewClass),
-            editPane: this.$el.children(this.$opts.editClass)
+            viewPane: this.$el.children("." + this.$opts.viewClass),
+            editPane: this.$el.children("." + this.$opts.editClass)
         };
     }
 
@@ -100,8 +109,9 @@
         },
         _initEditPane: function () {
             var self = this;
+			self.log("_initEditPane");
 
-            //self.$model.editPane.hide();
+            self.$model.editPane.hide();
 
 			var editSaveButton = $(self.$opts.editSaveButton)
 				.addClass(self.$opts.buttonClass)
@@ -127,12 +137,15 @@
                 .append(editButtons)
                 .append(this.$loading);
         },
-        _initViewPane: function () {
+        _initViewPane: function () {			
             var self = this;
-            var viewEditIcon = $(self.$opts.editButton)
+			self.log("_initViewPane");
+			
+            var viewEditIcon = $(self.$opts.viewEditButton)
 				.addClass(self.$opts.buttonClass)
 				.attr("title", "Edit")
-				.html(self.$opts.editButtonContents);				
+				.html(self.$opts.viewEditButtonContents)
+				.css("cursor","pointer");				
             self.$model.viewPane.text($.trim(self.$model.viewPane.text()));
             self.$model.viewPane
                 .wrapInner("<a class='display'/>")
@@ -144,32 +157,50 @@
             self.$model.viewPane.toggle();
             self.$model.editPane.toggle();
         },
-        submit: function () {
-            var self = this;
-
-            var inputs = self.$model.editPane.children(":input").serialize();
-            var url = self.$opts.url || self.$el.data("url");
+        submit: function () {			
+            var self = this;			
+			self.log("submit");	
+				
+			var url = self.$opts.url || self.$el.data("url");
             if (url == null || url == "" || url == undefined) {
                 self.error("No url was specified. Please add a 'data-url' attribute to the element.");
                 return;
             }
+			
+			var inputs = self.$model.editPane.children(":input").serialize();
+			
             var result = ($.isFunction(self.$opts.validate)) ?
                 self.$opts.validate(self.$model) : { valid: true };
 
             if (result.valid) {
                 document.body.style.cursor = "wait";
                 self.$loading.show();
-                $.post(url, inputs, function (response) {
-                    self.success(response);
-                    document.body.style.cursor = "default";
-                    self.$loading.hide();
-                });
+				
+				var ajaxOpts = {
+					type: "POST",
+					dataType: "JSON",
+					url: url,
+					data: inputs
+				};
+				$.ajax(ajaxOpts)
+					.success(function(response) {
+						self.success(response);
+					})
+					.error(function(xhr, message) {
+						self.error(message);
+					})
+					.complete(function() {
+						document.body.style.cursor = "default";
+						self.$loading.hide();	
+					});		
+				
             } else {
                 self.error(result.message);
             }
         },
         success: function (response) {
             var self = this;
+			self.log("success");
             if (response.success) {
                 self.toggle();
                 if ($.isFunction(self.$opts.success)) {
@@ -183,10 +214,15 @@
         },
         error: function (message) {
             var self = this;
-            self.$opts.log(message);
+			self.log("error:" + message);
             if ($.isFunction(self.$opts.error))
-                self.$opts.error(message, self.$model);
-        }
+                self.$opts.error(message, self.$model);			
+        },
+		log: function(message) {
+			var self = this;
+			if ($.isFunction(self.$opts.log)) self.$opts.log(message);
+			else console.log(message);
+		}
     };
 
     // The actual plugin

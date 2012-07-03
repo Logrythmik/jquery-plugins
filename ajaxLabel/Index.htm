@@ -28,27 +28,60 @@
         <section id="main" class="container">
             
 			
-			<h3>Example:</h3>
+			<h3>Simple Example:</h3>
+			<div class="well">
+			<span class="ajaxLabel" id="example1" data-url="response.js">
+			    <span class="ajaxLabelView">
+					Your name is Unknown
+				</span>
+				<span class="ajaxLabelEdit form-inline" >
+					<input type="text" id="name" name="name"/>                        
+				</span>
+			</span>   			
+			</div>
 			
-			<span class="ajaxLabel" id="example1"
-                      data-url="response.json">
-                   <span class="ajaxLabelView">
-                        Your name is Unknown
-                    </span>
-                    <span class="ajaxLabelEdit">
-                        <input type="text" id="name" name="name"/>                        
-                    </span>
-                </span>     
+<h4>HTML:</h4>
+<pre><code>&lt;span class=&quot;ajaxLabel&quot; id=&quot;example1&quot; data-url=&quot;response.json&quot;&gt;
+	&lt;span class=&quot;ajaxLabelView&quot;&gt;
+		Your name is Unknown
+	&lt;/span&gt;
+	&lt;span class=&quot;ajaxLabelEdit&quot;&gt;
+		&lt;input type=&quot;text&quot; id=&quot;name&quot; name=&quot;name&quot;/&gt;                        
+	&lt;/span&gt;
+&lt;/span&gt; 
+</span> 
+</code></pre>
+
+<h4>JS:</h4>
+<pre><code>&lt;script&gt;
+$(function() {
+ $("#example1").ajaxLabel({
+  validate: function (model) {
+	var name = model.editPane.find("#name").val();
+	if(name == "" || name == null)
+		return { valid: false, message: "Name is required!" };
+	return { valid: true };
+   },
+   success: function (response, model) {					
+	model.viewPane.children().remove();
+	model.viewPane.text(model.editPane.find("#name").val());					
+   }
+ });
+});
+&lt;/script&gt;
+</code></pre>
+			
+			
         </section>
     </div>
-	<script type="text/javascript" src="http://fortawesome.github.com/Font-Awesome/assets/js/jquery-1.7.1.min.js" />
-	<script type="text/javascript" src="jquery.ajaxLabel.js" />
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js" ></script>
+	<script type="text/javascript" src="jquery.ajaxLabel.js" ></script>
 	<script type="text/javascript">
 		$(function() {
 			 $("#example1").ajaxLabel({
 				validate: function (model) {
 					var name = model.editPane.find("#name").val();
-					if(name = "" || name = null)
+					if(name == "" || name == null)
 						return { valid: false, message: "Name is required!" };
 					return { valid: true };
 				},
