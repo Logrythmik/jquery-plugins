@@ -150,7 +150,10 @@
             self.$model.viewPane
                 .wrapInner("<a class='display'/>")
                 .append(viewEditIcon)
-                .click(function () { self.toggle(); });
+                .click(function () { 
+					self.toggle(); 
+					self.$model.editPane.find(":input")[0].focus(); 
+				});
         },
         toggle: function () {
             var self = this;
