@@ -3,4 +3,4 @@
 .ajaxLabel .btn-group .btn{float:none!important}
 .ajaxLabel a.btn:hover{text-decoration:none}
 .ajaxLabel a.display,.ajaxLabel a.display:hover{border-bottom:1px dashed green;text-decoration:none;cursor:pointer}
-/* .ajaxLabel .ajaxLabelEdit{display:none}
+.ajaxLabel .ajaxLabelEdit{display:none}

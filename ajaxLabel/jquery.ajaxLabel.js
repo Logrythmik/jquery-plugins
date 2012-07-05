@@ -47,7 +47,7 @@
 			// Validation Result:
 			// { valid: true|false, message: "The message you want to display if failed validation." }
             validate: function (model) { 
-				return new { valid: true, message: "" }; 
+				return { valid: true, message: "" }; 
 			},						
 			// success:
 			// --------------------------------------------------------------------
@@ -98,6 +98,7 @@
             viewPane: this.$el.children("." + this.$opts.viewClass),
             editPane: this.$el.children("." + this.$opts.editClass)
         };
+		this.$initialized = false;
     }
 
     // Separate functionality from object creation
@@ -106,6 +107,7 @@
             var self = this;
             self._initViewPane();
             self._initEditPane();
+			self.$initialized = true;
         },
         _initEditPane: function () {
             var self = this;
@@ -141,19 +143,23 @@
             var self = this;
 			self.log("_initViewPane");
 			
-            var viewEditIcon = $(self.$opts.viewEditButton)
-				.addClass(self.$opts.buttonClass)
-				.attr("title", "Edit")
+			var viewEditIcon = $(self.$opts.viewEditButton)
 				.html(self.$opts.viewEditButtonContents)
-				.css("cursor","pointer");				
+				.addClass(self.$opts.buttonClass)
+				.attr("title", "Click to edit")				
+				.css("cursor","pointer");
+				
             self.$model.viewPane.text($.trim(self.$model.viewPane.text()));
             self.$model.viewPane
                 .wrapInner("<a class='display'/>")
-                .append(viewEditIcon)
-                .click(function () { 
-					self.toggle(); 
-					self.$model.editPane.find(":input")[0].focus(); 
-				});
+                .append(viewEditIcon);
+				
+			if(!self.$initialized)
+			    self.$model.viewPane
+					.click(function () { 
+						self.toggle(); 
+						self.$model.editPane.find(":input")[0].focus(); 
+					});
         },
         toggle: function () {
             var self = this;
@@ -210,7 +216,8 @@
                     self.$opts.success(response, self.$model);
                     self._initViewPane();
                 }
-                self.$opts.message(response.message);
+				if(response.message)
+					self.$opts.message(response.message);
             } else {
                 self.error(response.message);
             }

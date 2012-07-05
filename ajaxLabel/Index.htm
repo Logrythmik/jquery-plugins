@@ -10,7 +10,7 @@
 
 <body>
     <div id="container">
-        <div class="navbar">
+        <div class="navbar navbar-fixed">
             <div class="navbar-inner">
                 <div class="container">
                     <button type="button"class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -26,11 +26,48 @@
         </div>    
                  
         <section id="main" class="container">
-            
-			
-			<h3>Simple Example:</h3>
+		
+			<h2>Simple Example:</h2>
 			<div class="well">
 			<span class="ajaxLabel" id="example1" data-url="response.js">
+			    <span class="ajaxLabelView">
+					No Name
+				</span>
+				<span class="ajaxLabelEdit form-inline" >
+					<input type="text" id="name" name="name"/>                        
+				</span>
+			</span>   			
+			</div>
+			
+<h4>HTML:</h4>
+<pre><code>&lt;span class=&quot;ajaxLabel&quot; id=&quot;example1&quot; data-url=&quot;response.json&quot;&gt;
+	&lt;span class=&quot;ajaxLabelView&quot;&gt;
+		No Name
+	&lt;/span&gt;
+	&lt;span class=&quot;ajaxLabelEdit&quot;&gt;
+		&lt;input type=&quot;text&quot; id=&quot;name&quot; name=&quot;name&quot;/&gt;                        
+	&lt;/span&gt;
+&lt;/span&gt; 
+</span> 
+</code></pre>
+
+<h4>JS:</h4>
+<pre><code>&lt;script&gt;
+$(function() {
+ $("#example1").ajaxLabel({
+   success: function (response, model) {					
+	model.viewPane.children().remove();
+	model.viewPane.text(model.editPane.find("#name").val());					
+   }
+ });
+});
+&lt;/script&gt;
+</code></pre>		
+            
+			
+			<h2>Validation Example:</h2>
+			<div class="well">
+			<span class="ajaxLabel" id="example2" data-url="response.js">
 			    <span class="ajaxLabelView">
 					Your name is Unknown
 				</span>
@@ -41,7 +78,7 @@
 			</div>
 			
 <h4>HTML:</h4>
-<pre><code>&lt;span class=&quot;ajaxLabel&quot; id=&quot;example1&quot; data-url=&quot;response.json&quot;&gt;
+<pre><code>&lt;span class=&quot;ajaxLabel&quot; id=&quot;example2&quot; data-url=&quot;response.json&quot;&gt;
 	&lt;span class=&quot;ajaxLabelView&quot;&gt;
 		Your name is Unknown
 	&lt;/span&gt;
@@ -55,7 +92,7 @@
 <h4>JS:</h4>
 <pre><code>&lt;script&gt;
 $(function() {
- $("#example1").ajaxLabel({
+ $("#example2").ajaxLabel({
   validate: function (model) {
 	var name = model.editPane.find("#name").val();
 	if(name == "" || name == null)
@@ -79,6 +116,12 @@ $(function() {
 	<script type="text/javascript">
 		$(function() {
 			 $("#example1").ajaxLabel({
+				success: function (response, model) {					
+					model.viewPane.children().remove();
+					model.viewPane.text(model.editPane.find("#name").val());					
+				}
+			});
+			$("#example2").ajaxLabel({
 				validate: function (model) {
 					var name = model.editPane.find("#name").val();
 					if(name == "" || name == null)
